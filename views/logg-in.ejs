@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logg inn</title>
+  <style>
+    body { font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#f2f2f2; }
+    .login-box { background:white; padding:25px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2); width:300px; text-align:center; }
+    input { width:90%; padding:8px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
+    button { width:100%; padding:10px; background:dodgerblue; border:none; color:white; border-radius:6px; cursor:pointer; }
+    button:hover { background:deepskyblue; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Logg inn</h2>
+
+    <!-- VIKTIG: action må være /logg-in (samme som router.post) -->
+    <form action="/logg-in" method="POST">
+      <!-- VIKTIG: name="" må matche req.body i controller -->
+      <input type="text" name="brukernavn" placeholder="Brukernavn" required>
+      <input type="password" name="passord" placeholder="Passord" required>
+      <button type="submit">Logg inn</button>
+    </form>
+
+    <p style="margin-top:10px;"><a href="/">Tilbake</a></p>
+  </div>
+</body>
+</html>
