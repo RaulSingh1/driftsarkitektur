@@ -1,33 +1,54 @@
 const User = require('../models/userModel');
+const bcrypt = require('bcryptjs');
 
-const indexrenderer = (req, res) => {
-  res.render('index');
-};
+/* =========================
+   CREATE ACCOUNT (REGISTER)
+   ========================= */
+exports.registerUser = async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-const vislogginsidee = (req, res) => {
-  res.render('logg-in');
-};
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.send('Bruker finnes allerede');
+    }
 
-const logginnBruker = async (req, res) => {
-  const { brukernavn, passord } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  if (!brukernavn || !passord) {
-    return res.status(400).send('Mangler brukernavn eller passord');
+    const user = new User({
+      username,
+      password: hashedPassword
+    });
+
+    await user.save();
+    res.redirect('/logg-in');
+  } catch (err) {
+    console.error(err);
+    res.send('Feil ved registrering');
   }
-
-  const bruker = await User.findOne({ brukernavn });
-
-  if (!bruker) {
-    const nyBruker = new User({ brukernavn, passord });
-    await nyBruker.save();
-    return res.redirect('/');
-  }
-
-  return res.status(400).send('Brukernavn er allerede tatt');
 };
 
-module.exports = {
-  indexrenderer,
-  vislogginsidee,
-  logginnBruker,
+/* =================
+   LOGIN (IKKE CREATE)
+   ================= */
+exports.loginUser = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.send('Bruker finnes ikke');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.send('Feil passord');
+    }
+
+    // OK login
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.send('Feil ved innlogging');
+  }
 };
